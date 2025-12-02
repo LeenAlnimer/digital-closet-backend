@@ -2,12 +2,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import app from "./app";
-import { PrismaClient } from "./generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient({
-  // pass the datasource URL to the generated client
-  datasourceUrl: process.env.DATABASE_URL!,
-} as any);
+const prisma = new PrismaClient();
 
 const port = Number(process.env.PORT ?? 3000);
 
