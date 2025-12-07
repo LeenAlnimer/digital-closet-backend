@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import authRoutes from "./modules/user/user.routes";
 
 dotenv.config();
 
@@ -17,5 +18,8 @@ app.use(express.json());
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
+
+// mount auth
+app.use("/auth", authRoutes);
 
 export default app;
