@@ -5,8 +5,9 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 
 import authRoutes from "./modules/user/user.routes";
-import itemRoutes from "./modules/user/items/item.routes"; 
-import uploadRoutes from "./modules/upload/upload.routes"; // ← أضيفي هذا السطر
+import itemRoutes from "./modules/user/items/item.routes";
+import outfitRoutes from "./modules/user/outfits/outfit.routes";
+import uploadRoutes from "./modules/upload/upload.routes";
 
 dotenv.config();
 
@@ -26,9 +27,12 @@ app.get("/health", (req, res) => {
 app.use("/auth", authRoutes);
 
 // items routes
-app.use("/items", itemRoutes); 
+app.use("/items", itemRoutes);
+
+// outfits routes
+app.use("/outfits", outfitRoutes);
 
 // upload routes
-app.use("/upload", uploadRoutes); 
+app.use("/upload", uploadRoutes);
 
 export default app;
