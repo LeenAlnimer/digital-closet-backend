@@ -9,6 +9,7 @@ import itemRoutes from "./modules/user/items/item.routes";
 import outfitRoutes from "./modules/user/outfits/outfit.routes";
 import uploadRoutes from "./modules/upload/upload.routes";
 import scheduleRoutes from "./modules/user/schedules/schedule.routes";
+import suggestionRoutes from "./modules/user/suggestions/suggestion.routes";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/upload", uploadRoutes);
 //
 
 app.use("/schedules", scheduleRoutes);
+app.use("/suggestions", suggestionRoutes);
 
 
 export default app;
