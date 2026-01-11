@@ -39,7 +39,7 @@ enum ClothingType {
   ACCESSORY
   OTHER
 }
-
+1
 enum Season {
   WINTER
   SPRING
