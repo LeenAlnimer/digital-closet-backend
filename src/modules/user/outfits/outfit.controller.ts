@@ -7,6 +7,17 @@ import {
   updateOutfit,
   deleteOutfit,
 } from "./outfit.service";
+import { OccasionType } from "@prisma/client";
+
+// Helper: تحويل string إلى OccasionType بشكل آمن
+function toOccasionType(value?: string): OccasionType | undefined {
+  if (!value) return undefined;
+  const upper = value.toUpperCase();
+  if (Object.values(OccasionType).includes(upper as OccasionType)) {
+    return upper as OccasionType;
+  }
+  return undefined;
+}
 
 // POST /outfits
 export async function createOutfitHandler(req: AuthRequest, res: Response) {
@@ -16,7 +27,7 @@ export async function createOutfitHandler(req: AuthRequest, res: Response) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const { name, itemIds } = req.body;
+    const { name, itemIds, occasion } = req.body;
 
     if (!name || !Array.isArray(itemIds) || itemIds.length === 0) {
       return res.status(422).json({
@@ -24,9 +35,12 @@ export async function createOutfitHandler(req: AuthRequest, res: Response) {
       });
     }
 
+    const parsedOccasion = toOccasionType(occasion);
+
     const outfit = await createOutfit(userId, {
       name,
       itemIds,
+      ...(parsedOccasion !== undefined && { occasion: parsedOccasion }),
     });
 
     return res.status(201).json(outfit);
@@ -44,7 +58,10 @@ export async function getOutfitsHandler(req: AuthRequest, res: Response) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const outfits = await getOutfits(userId);
+    const { occasion } = req.query;
+    const parsedOccasion = toOccasionType(occasion as string | undefined);
+
+    const outfits = await getOutfits(userId, parsedOccasion);
     return res.status(200).json(outfits);
   } catch (err: any) {
     console.error("Error getting outfits:", err);
@@ -93,12 +110,14 @@ export async function updateOutfitHandler(req: AuthRequest, res: Response) {
       return res.status(400).json({ message: "Outfit id is required" });
     }
 
-    const { name, itemIds } = req.body;
+    const { name, itemIds, occasion } = req.body;
+    const parsedOccasion = toOccasionType(occasion);
 
     try {
       const updated = await updateOutfit(userId, id, {
         name,
         itemIds,
+        ...(parsedOccasion !== undefined && { occasion: parsedOccasion }),
       });
 
       return res.status(200).json(updated);

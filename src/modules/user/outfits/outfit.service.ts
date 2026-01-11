@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma, OccasionType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -7,21 +7,24 @@ const prisma = new PrismaClient();
 export interface CreateOutfitInput {
   name: string;
   itemIds: string[];
+  occasion?: OccasionType;
 }
 
 export interface UpdateOutfitInput {
   name?: string;
   itemIds?: string[];
+  occasion?: OccasionType;
 }
 
 // ===== إنشاء Outfit =====
 export async function createOutfit(userId: string, data: CreateOutfitInput) {
-  const { name, itemIds } = data;
+  const { name, itemIds, occasion } = data;
 
   const outfit = await prisma.outfit.create({
     data: {
       name,
       userId,
+      occasion: occasion ?? null,
       items: {
         create: itemIds.map((itemId) => ({
           clothingItemId: itemId,
@@ -41,9 +44,12 @@ export async function createOutfit(userId: string, data: CreateOutfitInput) {
 }
 
 // ===== جلب كل Outfits =====
-export async function getOutfits(userId: string) {
+export async function getOutfits(userId: string, occasion?: OccasionType) {
   return prisma.outfit.findMany({
-    where: { userId },
+    where: {
+      userId,
+      ...(occasion ? { occasion } : {}),
+    },
     include: {
       items: {
         include: {
@@ -87,6 +93,10 @@ export async function updateOutfit(
 
   if (data.name !== undefined) {
     updateData.name = data.name;
+  }
+
+  if (data.occasion !== undefined) {
+    updateData.occasion = data.occasion;
   }
 
   if (data.itemIds) {
